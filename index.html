@@ -1,15 +1,14 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-VXWTRSN44Y"></script>
     <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-
-    gtag('config', 'G-VXWTRSN44Y');
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'G-VXWTRSN44Y');
     </script>
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -18,20 +17,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
     <title>Triangle Splatting</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/css/bootstrap.min.css">
-    <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,500,600' rel='stylesheet'
-        type='text/css'>
+    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,500,600" rel="stylesheet" type="text/css">
     <link rel="stylesheet" href="assets/css/Highlight-Clean.css">
     <link rel="stylesheet" href="assets/css/styles.css">
-    <!-- compare two images -->
-    <!-- <link rel="stylesheet" href="assets/css/bulma.min.css"> -->
     <link rel="stylesheet" href="assets/css/bulma-carousel.min.css">
     <link rel="stylesheet" href="assets/css/bulma-slider.min.css">
 
     <link rel="apple-touch-icon" sizes="180x180" href="assets/logo.png">
     <link rel="icon" type="image/png" sizes="32x32" href="assets/logo.png">
     <link rel="icon" type="image/png" sizes="16x16" href="assets/logo.png">
-
-
     <link rel="manifest" href="site.webmanifest">
 
     <meta property="og:site_name" content="Triangle Splatting for Real-Time Radiance Field Rendering" />
@@ -41,748 +35,594 @@
 
     <script src="assets/js/video_comparison.js"></script>
     <script type="module" src="https://unpkg.com/@google/model-viewer@2.0.1/dist/model-viewer.min.js"></script>
-
     <script src="assets/js/bulma-carousel.min.js"></script>
     <script src="assets/js/bulma-slider.min.js"></script>
 
-
     <style>
+        /* 1. Fluid aspect-ratio “before/after” container */
         .small-bal-container {
-            width: 560px; /* Set the desired width */
-            height: 322px; /* Set the height proportional to the aspect ratio (e.g., 16:9) */
-            margin: 0 auto; /* Center the images */
-            position: relative; /* Maintain the positioning for the slider and labels */
-            overflow: hidden; /* Ensure content stays within the container */
+            width: 100%;
+            max-width: 560px;
+            aspect-ratio: 560 / 322;
+            position: relative;
+            margin: 0 auto;
+            overflow: hidden;
         }
-    
-        .small-bal-container img {
+        .small-bal-container img,
+        .small-bal-container video {
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
-            object-fit: cover; /* Ensure images scale proportionally */
+            object-fit: cover;
         }
+
+        /* 2. Custom carousel arrow tweaks */
         .carousel-control-prev-icon,
         .carousel-control-next-icon {
-            background-color: black; /* Black circle */
-            border-radius: 50%; /* Make it circular */
-            width: 50px; /* Larger circle width */
-            height: 50px; /* Larger circle height */
+            background-color: black;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
             display: flex;
             justify-content: center;
             align-items: center;
-            border: 3px solid white; /* White border around the circle */
+            border: 3px solid white;
         }
-
         .carousel-control-prev-icon::after,
         .carousel-control-next-icon::after {
-            content: ''; /* Remove default arrow */
+            content: '';
             display: inline-block;
-            width: 8px; /* Slightly larger arrow width */
-            height: 8px; /* Slightly larger arrow height */
-            border: solid white; /* White arrow */
+            width: 8px;
+            height: 8px;
+            border: solid white;
         }
-
         .carousel-control-prev-icon::after {
-            border-width: 0 4px 4px 0; /* Adjust arrow thickness */
-            transform: rotate(135deg); /* Left arrow */
-            margin-left: -3px; /* Centering tweak */
+            border-width: 0 4px 4px 0;
+            transform: rotate(135deg);
+            margin-left: -3px;
+        }
+        .carousel-control-next-icon::after {
+            border-width: 0 4px 4px 0;
+            transform: rotate(-45deg);
+            margin-right: -3px;
         }
 
-        .carousel-control-next-icon::after {
-            border-width: 0 4px 4px 0; /* Adjust arrow thickness */
-            transform: rotate(-45deg); /* Right arrow */
-            margin-right: -3px; /* Centering tweak */
+        /* 3. Minor tweaks on very small screens */
+        @media (max-width: 575.98px) {
+            body {
+                font-size: 0.9rem;
+            }
+            h1 {
+                font-size: 1.75rem;
+            }
+            .author-container .authors .col h6 {
+                font-size: 0.8rem;
+            }
+            .author-container .affiliations .col h6 {
+                font-size: 0.75rem;
+            }
+            .container,
+            .container-fluid {
+                padding-left: 0.5rem;
+                padding-right: 0.5rem;
+            }
         }
     </style>
-
-
 </head>
 
 <body>
-
-    <div class="highlight-clean" style="padding-bottom: 1;">
-        <div class="container" style="max-width: 100%; margin-bottom: 10px;">
-            <h1 class="text-center" style="margin-bottom: 5px;">Triangle Splatting for Real-Time Radiance Field Rendering</h1>
+    <div class="highlight-clean pb-3">
+        <div class="container-fluid mb-3">
+            <h1 class="text-center mb-2">Triangle Splatting for Real-Time Radiance Field Rendering</h1>
         </div>
-        <div class="container author-container" style="margin-top: 30px;">
+        <div class="container author-container mt-4">
             <div class="row authors">
-                <div class="col">
+                <div class="col-6 col-md">
                     <h6><a href="https://scholar.google.com/citations?user=Z0nJ5LwAAAAJ&hl=en"><strong>Jan Held</strong>*<sup>1,2</sup></a></h6>
                 </div>
-                <div class="col">
+                <div class="col-6 col-md">
                     <h6><a href="https://scholar.google.com/citations?user=kpDRpBwAAAAJ&hl=en"><strong>Renaud Vandeghen</strong>*<sup>1</sup></a></h6>
                 </div>
-                 <div class="col">
-                    <h6><a class="text-center" href="https://scholar.google.be/citations?user=_K1L2MIAAAAJ&hl=fr">Adrien Deliege<sup>1</sup></a></h6>
+                <div class="col-6 col-md">
+                    <h6><a href="https://scholar.google.be/citations?user=_K1L2MIAAAAJ&hl=fr">Adrien Deliege<sup>1</sup></a></h6>
                 </div>
-                <div class="col">
-                    <h6><a href="https://abdullahamdi.com/">Abdullah Hamdi<sup>3</sup> </a></h6>
+                <div class="col-6 col-md">
+                    <h6><a href="https://abdullahamdi.com/">Abdullah Hamdi<sup>3</sup></a></h6>
                 </div>
-                <div class="col">
+                <div class="col-6 col-md">
                     <h6><a href="https://www.silviogiancola.com/">Silvio Giancola<sup>2</sup></a></h6>
                 </div>
             </div>
-            <div class="row authors">
-                <div class="col">
-                    <h6><a href="https://www.anthonycioppa.be/">Anthony Cioppa<sup>1</sup> </a></h6>
+            <div class="row authors mt-3">
+                <div class="col-6 col-md">
+                    <h6><a href="https://www.anthonycioppa.be/">Anthony Cioppa<sup>1</sup></a></h6>
                 </div>
-                <div class="col">
+                <div class="col-6 col-md">
                     <h6><a href="https://www.robots.ox.ac.uk/~vedaldi/">Andrea Vedaldi<sup>3</sup></a></h6>
                 </div>
-                <div class="col">
+                <div class="col-6 col-md">
                     <h6><a href="https://www.bernardghanem.com/">Bernard Ghanem<sup>2</sup></a></h6>
                 </div>
-                <div class="col">
+                <div class="col-6 col-md">
                     <h6><a href="https://theialab.ca/">Andrea Tagliasacchi<sup>4,5,6</sup></a></h6>
                 </div>
-                <div class="col">
+                <div class="col-6 col-md">
                     <h6><a href="https://scholar.google.com/citations?user=IQm8ljgAAAAJ&hl=en">Marc Van Droogenbroeck<sup>1</sup></a></h6>
                 </div>
             </div>
-            <div class="row affiliations" style="margin-top: 15px; margin-bottom: 0px;">
-                <div class="col">
-                    <h6 class="text-center"><a class="text-center"><sup>1</sup>University of Liege</a></h6>
+            <div class="row affiliations mt-3 mb-0">
+                <div class="col-6 col-md">
+                    <h6 class="text-center"><sup>1</sup>University of Liege</h6>
                 </div>
-                <div class="col">
-                    <h6 class="text-center"><a class="text-center"><sup>2</sup>KAUST</a></h6>
+                <div class="col-6 col-md">
+                    <h6 class="text-center"><sup>2</sup>KAUST</h6>
                 </div>
-                <div class="col">
-                    <h6 class="text-center"><a class="text-center"><sup>3</sup>University of Oxford</a></h6>
+                <div class="col-6 col-md">
+                    <h6 class="text-center"><sup>3</sup>University of Oxford</h6>
                 </div>
-                <div class="col">
-                    <h6 class="text-center"><a class="text-center"><sup>4</sup>Simon Fraser University</a></h6>
+                <div class="col-6 col-md">
+                    <h6 class="text-center"><sup>4</sup>Simon Fraser University</h6>
                 </div>
-                <div class="col">
-                    <h6 class="text-center"><a class="text-center"><sup>5</sup>University of Toronto</a></h6>
+                <div class="col-6 col-md">
+                    <h6 class="text-center"><sup>5</sup>University of Toronto</h6>
                 </div>
-                <div class="col">
-                    <h6 class="text-center"><a class="text-center"><sup>6</sup>Google DeepMind</a></h6>
+                <div class="col-6 col-md">
+                    <h6 class="text-center"><sup>6</sup>Google DeepMind</h6>
                 </div>
             </div>
         </div>
-
-        <p class="text-center" style="padding-top: 10px; margin: 0 auto; max-width: 1100px;">
-                    *equal contribution
+        <p class="text-center pt-2 mx-auto" style="max-width: 1100px;">
+            *equal contribution
         </p>
-
-
     </div>
-        <div class="container align-items-center">
-            <div class="row text-center justify-content-center mx-auto">
-                <div class="col-sm-3">
-                    <a href="http://arxiv.org/abs/2505.19175" target="_blank" class="link-block w-inline-block">
-                        <img src="assets/media/arxiv_paper.png" alt="paper" class="img-fluid" style="height:60px" /></a>
-                    <br>
-                    <div class="text-block-2"><strong class="bold-text-nerf_v2">Arxiv</strong></div>
+
+    <div class="container align-items-center">
+        <div class="row text-center justify-content-center">
+            <div class="col-6 col-sm-3 mb-3">
+                <a href="http://arxiv.org/abs/2505.19175" target="_blank" class="link-block w-inline-block">
+                    <img src="assets/media/arxiv_paper.png" alt="paper" class="img-fluid" style="height:60px" />
+                </a>
+                <br>
+                <div class="text-block-2"><strong class="bold-text-nerf_v2">Arxiv</strong></div>
+            </div>
+            <div class="col-6 col-sm-3 mb-3">
+                <a href="https://github.com/trianglesplatting/triangle-splatting" target="_blank" class="link-block w-inline-block">
+                    <img src="assets/media/github.png" alt="github" class="img-fluid" style="height:60px" />
+                </a>
+                <br>
+                <div class="text-block-2"><strong class="bold-text-nerf_v2">Code</strong></div>
+            </div>
+        </div>
+    </div>
+    <p class="text-center pt-2 mx-auto" style="max-width: 1100px;">
+        The code will be released on Tuesday, June 3rd.
+    </p>
+
+    <div class="container my-4">
+        <hr class="divider" />
+        <div class="row">
+            <!-- Example 2 -->
+            <div class="col-12 col-md-6 mb-4">
+                <h5 class="text-center">2D Gaussian Splatting vs Triangle Splatting</h5>
+                <div id="example2" class="small-bal-container">
+                    <div class="bal-wrapper">
+                        <div class="bal-after">
+                            <img src="assets/comparisons/Compressed/stump_ts.png" alt="Example 2 After">
+                            <div class="bal-afterPosition afterLabel">Triangle Splatting (Ours)</div>
+                        </div>
+                        <div class="bal-before">
+                            <div class="bal-before-inset">
+                                <img src="assets/comparisons/Compressed/stump_2dgs.png" alt="Example 2 Before">
+                                <div class="bal-beforePosition beforeLabel">2D Gaussian Splatting</div>
+                            </div>
+                        </div>
+                        <div class="bal-handle">
+                            <span class="handle-left-arrow"></span>
+                            <span class="handle-right-arrow"></span>
+                        </div>
+                    </div>
                 </div>
-                <div class="col-sm-3">
-                    <a href="https://github.com/trianglesplatting/triangle-splatting" target="_blank" class="link-block w-inline-block">
-                        <img src="assets/media/github.png" alt="github" class="img-fluid" style="height:60px" /></a>
-                    <br>
-                    <div class="text-block-2"><strong class="bold-text-nerf_v2">Code</strong></div>
+            </div>
+            <!-- Example 3 -->
+            <div class="col-12 col-md-6 mb-4">
+                <h5 class="text-center">Ground truth vs Triangle Splatting</h5>
+                <div id="example3" class="small-bal-container">
+                    <div class="bal-wrapper">
+                        <div class="bal-after">
+                            <img src="assets/comparisons/Compressed/bonsai.png" alt="Example 3 After">
+                            <div class="bal-afterPosition afterLabel">Triangle Splatting (Ours)</div>
+                        </div>
+                        <div class="bal-before">
+                            <div class="bal-before-inset">
+                                <img src="assets/comparisons/Compressed/bonsai_gt.png" alt="Example 3 Before">
+                                <div class="bal-beforePosition beforeLabel">Ground truth</div>
+                            </div>
+                        </div>
+                        <div class="bal-handle">
+                            <span class="handle-left-arrow"></span>
+                            <span class="handle-right-arrow"></span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <p class="text-center" style="padding-top: 10px; margin: 0 auto; max-width: 1100px;">
-            The code will be released on Tuesday, June 3rd.
-        </p>
-
-        <div class="container">
-            <h2></h2>
-            <hr class="divider" />
-            <div class="row">
-                <!-- Example 2 -->
-                <div class="col-md-6">
-                    <h5 class="text-center">2D Gaussian Splatting vs Triangle Splatting</h5>
-                    <div id="example2" class="bal-container-small small-bal-container">
-                        <div class="bal-wrapper">
-                            <div class="bal-after">
-                                <img src="assets/comparisons/Compressed/stump_ts.png" alt="Example 2 After">
-                                <div class="bal-afterPosition afterLabel">
-                                    Triangle Splatting (Ours)
-                                </div>
-                            </div>
-                            <div class="bal-before">
-                                <div class="bal-before-inset">
-                                    <img src="assets/comparisons/Compressed/stump_2dgs.png" alt="Example 2 Before">
-                                    <div class="bal-beforePosition beforeLabel">
-                                        2D Gaussian Splatting
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="bal-handle">
-                                <span class="handle-left-arrow"></span>
-                                <span class="handle-right-arrow"></span>
+        <div class="row">
+            <!-- Example 6 -->
+            <div class="col-12 col-md-6 mb-4">
+                <div id="example6" class="small-bal-container">
+                    <div class="bal-wrapper">
+                        <div class="bal-after">
+                            <img src="assets/comparisons/Compressed/bicycle_ts.png" alt="Example 6 After">
+                            <div class="bal-afterPosition afterLabel">Triangle Splatting (Ours)</div>
+                        </div>
+                        <div class="bal-before">
+                            <div class="bal-before-inset">
+                                <img src="assets/comparisons/Compressed/bicycle_2dgs.png" alt="Example 6 Before">
+                                <div class="bal-beforePosition beforeLabel">2D Gaussian Splatting</div>
                             </div>
                         </div>
-                    </div>
-                </div>
-                <!-- Example 3 -->
-                <div class="col-md-6">
-                    <h5 class="text-center">Ground truth vs Triangle Splatting</h5>
-                    <div id="example3" class="bal-container-small small-bal-container">
-                        <div class="bal-wrapper">
-                            <div class="bal-after">
-                                <img src="assets/comparisons/Compressed/bonsai.png" alt="Example 3 After">
-                                <div class="bal-afterPosition afterLabel">
-                                    Triangle Splatting (Ours)
-                                </div>
-                            </div>
-                            <div class="bal-before">
-                                <div class="bal-before-inset">
-                                    <img src="assets/comparisons/Compressed/bonsai_gt.png" alt="Example 3 Before">
-                                    <div class="bal-beforePosition beforeLabel">
-                                        Ground truth
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="bal-handle">
-                                <span class="handle-left-arrow"></span>
-                                <span class="handle-right-arrow"></span>
-                            </div>
+                        <div class="bal-handle">
+                            <span class="handle-left-arrow"></span>
+                            <span class="handle-right-arrow"></span>
                         </div>
                     </div>
                 </div>
             </div>
-
-
-            <div class="row">
-                <!-- Example 2 -->
-                <div class="col-md-6">
-                    <div id="example6" class="bal-container-small small-bal-container">
-                        <div class="bal-wrapper">
-                            <div class="bal-after">
-                                <img src="assets/comparisons/Compressed/bicycle_ts.png" alt="Example 2 After">
-                                <div class="bal-afterPosition afterLabel">
-                                    Triangle Splatting (Ours)
-                                </div>
-                            </div>
-                            <div class="bal-before">
-                                <div class="bal-before-inset">
-                                    <img src="assets/comparisons/Compressed/bicycle_2dgs.png" alt="Example 2 Before">
-                                    <div class="bal-beforePosition beforeLabel">
-                                        2D Gaussian Splatting
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="bal-handle">
-                                <span class="handle-left-arrow"></span>
-                                <span class="handle-right-arrow"></span>
+            <!-- Example 7 -->
+            <div class="col-12 col-md-6 mb-4">
+                <div id="example7" class="small-bal-container">
+                    <div class="bal-wrapper">
+                        <div class="bal-after">
+                            <img src="assets/comparisons/Compressed/room_ts2.png" alt="Example 7 After">
+                            <div class="bal-afterPosition afterLabel">Triangle Splatting (Ours)</div>
+                        </div>
+                        <div class="bal-before">
+                            <div class="bal-before-inset">
+                                <img src="assets/comparisons/Compressed/room_gt2.png" alt="Example 7 Before">
+                                <div class="bal-beforePosition beforeLabel">Ground truth</div>
                             </div>
                         </div>
-                    </div>
-                </div>
-                <!-- Example 3 -->
-                <div class="col-md-6">
-                    <div id="example7" class="bal-container-small small-bal-container">
-                        <div class="bal-wrapper">
-                            <div class="bal-after">
-                                <img src="assets/comparisons/Compressed/room_ts2.png" alt="Example 3 After">
-                                <div class="bal-afterPosition afterLabel">
-                                    Triangle Splatting (Ours)
-                                </div>
-                            </div>
-                            <div class="bal-before">
-                                <div class="bal-before-inset">
-                                    <img src="assets/comparisons/Compressed/room_gt2.png" alt="Example 3 Before">
-                                    <div class="bal-beforePosition beforeLabel">
-                                        Ground truth
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="bal-handle">
-                                <span class="handle-left-arrow"></span>
-                                <span class="handle-right-arrow"></span>
-                            </div>
+                        <div class="bal-handle">
+                            <span class="handle-left-arrow"></span>
+                            <span class="handle-right-arrow"></span>
                         </div>
                     </div>
                 </div>
             </div>
-
-
-            <div class="row">
-                <!-- Example 2 -->
-                <div class="col-md-6">
-                    <div id="example4" class="bal-container-small small-bal-container">
-                        <div class="bal-wrapper">
-                            <div class="bal-after">
-                                <img src="assets/comparisons/Compressed/room_ts.png" alt="Example 2 After">
-                                <div class="bal-afterPosition afterLabel">
-                                    Triangle Splatting (Ours)
-                                </div>
-                            </div>
-                            <div class="bal-before">
-                                <div class="bal-before-inset">
-                                    <img src="assets/comparisons/Compressed/room_2dgs.png" alt="Example 2 Before">
-                                    <div class="bal-beforePosition beforeLabel">
-                                        2D Gaussian Splatting
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="bal-handle">
-                                <span class="handle-left-arrow"></span>
-                                <span class="handle-right-arrow"></span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- Example 3 -->
-                <div class="col-md-6">
-                    <div id="example5" class="bal-container-small small-bal-container">
-                        <div class="bal-wrapper">
-                            <div class="bal-after">
-                                <img src="assets/comparisons/Compressed/garden_ts2.png" alt="Example 3 After">
-                                <div class="bal-afterPosition afterLabel">
-                                    Triangle Splatting (Ours)
-                                </div>
-                            </div>
-                            <div class="bal-before">
-                                <div class="bal-before-inset">
-                                    <img src="assets/comparisons/Compressed/garden_gt2.png" alt="Example 3 Before">
-                                    <div class="bal-beforePosition beforeLabel">
-                                        Ground truth
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="bal-handle">
-                                <span class="handle-left-arrow"></span>
-                                <span class="handle-right-arrow"></span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
         </div>
 
-        <p class="text-center" style="padding-top: 10px; margin: 0 auto; max-width: 1100px;">
+        <div class="row">
+            <!-- Example 4 -->
+            <div class="col-12 col-md-6 mb-4">
+                <div id="example4" class="small-bal-container">
+                    <div class="bal-wrapper">
+                        <div class="bal-after">
+                            <img src="assets/comparisons/Compressed/room_ts.png" alt="Example 4 After">
+                            <div class="bal-afterPosition afterLabel">Triangle Splatting (Ours)</div>
+                        </div>
+                        <div class="bal-before">
+                            <div class="bal-before-inset">
+                                <img src="assets/comparisons/Compressed/room_2dgs.png" alt="Example 4 Before">
+                                <div class="bal-beforePosition beforeLabel">2D Gaussian Splatting</div>
+                            </div>
+                        </div>
+                        <div class="bal-handle">
+                            <span class="handle-left-arrow"></span>
+                            <span class="handle-right-arrow"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Example 5 -->
+            <div class="col-12 col-md-6 mb-4">
+                <div id="example5" class="small-bal-container">
+                    <div class="bal-wrapper">
+                        <div class="bal-after">
+                            <img src="assets/comparisons/Compressed/garden_ts2.png" alt="Example 5 After">
+                            <div class="bal-afterPosition afterLabel">Triangle Splatting (Ours)</div>
+                        </div>
+                        <div class="bal-before">
+                            <div class="bal-before-inset">
+                                <img src="assets/comparisons/Compressed/garden_gt2.png" alt="Example 5 Before">
+                                <div class="bal-beforePosition beforeLabel">Ground truth</div>
+                            </div>
+                        </div>
+                        <div class="bal-handle">
+                            <span class="handle-left-arrow"></span>
+                            <span class="handle-right-arrow"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <p class="text-center pt-3 mx-auto" style="max-width: 1100px;">
             Triangle Splatting achieves high-quality novel view synthesis and fast rendering by representing scenes with triangles.
-        In contrast, the inherent softness of Gaussian primitives often leads to blurring and a loss of fine details, for example, beneath the bench or at the room’s door, whereas Triangle Splatting preserves sharp edges and accurately captures fine details.        
+            In contrast, the inherent softness of Gaussian primitives often leads to blurring and a loss of fine details, for example, beneath the bench or at the room’s door, whereas Triangle Splatting preserves sharp edges and accurately captures fine details.
         </p>
-
 
         <hr class="divider" />
-        <div class="container" style="max-width: col-sm-12;">
+        <div class="container">
             <div class="row">
-                <div class="col-sm-12">
-                    <h2 style="font-weight: bold;">Abstract</h2>
-                    <p style="text-align: justify">
-                        The field of computer graphics was revolutionized by models such as Neural Radiance Fields and 3D Gaussian Splatting, displacing triangles as the dominant representation for photogrammetry. In this paper, we argue for <span style="font-weight: bold;">a triangle come back.</span>. We develop a differentiable renderer that directly optimizes triangles via end-to-end gradients. We achieve this by rendering each triangle as differentiable splats, combining the efficiency of triangles with the adaptive density of representations based on independent primitives. Compared to popular 2D and 3D Gaussian Splatting methods, our approach achieves higher visual fidelity, faster convergence, and increased rendering throughput. On the Mip-NeRF360 dataset, our method outperforms concurrent non-volumetric primitives in visual fidelity and achieves higher perceptual quality than the state-of-the-art Zip-NeRF on indoor scenes. <br> Triangles are <span style="font-weight: bold;">simple</span>, <span style="font-weight: bold;">compatible</span> with standard graphics stacks and GPU hardware, and <span style="font-weight: bold;">highly efficient</span>: for the Garden scene, we achieve over 2,400 FPS at 1280×720 resolution using an off-the-shelf mesh renderer. These results highlight the efficiency and effectiveness of triangle-based representations for high-quality novel view synthesis. Triangles bring us closer to mesh-based optimization by combining classical computer graphics with modern differentiable rendering frameworks.
+                <div class="col-12">
+                    <h2 class="font-weight-bold">Abstract</h2>
+                    <p class="text-justify">
+                        The field of computer graphics was revolutionized by models such as Neural Radiance Fields and 3D Gaussian Splatting, displacing triangles as the dominant representation for photogrammetry. In this paper, we argue for <strong>a triangle come back.</strong> We develop a differentiable renderer that directly optimizes triangles via end-to-end gradients. We achieve this by rendering each triangle as differentiable splats, combining the efficiency of triangles with the adaptive density of representations based on independent primitives. Compared to popular 2D and 3D Gaussian Splatting methods, our approach achieves higher visual fidelity, faster convergence, and increased rendering throughput. On the Mip-NeRF360 dataset, our method outperforms concurrent non-volumetric primitives in visual fidelity and achieves higher perceptual quality than the state-of-the-art Zip-NeRF on indoor scenes.<br>
+                        Triangles are <strong>simple</strong>, <strong>compatible</strong> with standard graphics stacks and GPU hardware, and <strong>highly efficient</strong>: for the Garden scene, we achieve over 2,400 FPS at 1280×720 resolution using an off-the-shelf mesh renderer. These results highlight the efficiency and effectiveness of triangle-based representations for high-quality novel view synthesis. Triangles bring us closer to mesh-based optimization by combining classical computer graphics with modern differentiable rendering frameworks.
                     </p>
                 </div>
             </div>
         </div>
+    </div>
 
-    <div class="container">
+    <div class="container my-4">
         <div class="row justify-content-center">
-            <div class="col-md-8 text-center">
-                <video class="img-fluid mb-3" autoplay muted loop playsinline>
-                <source src="assets/video/teaser_video.mp4" type="video/mp4">
-                Your browser does not support the video tag.
-            </video>
+            <div class="col-12 col-md-8 text-center">
+                <div class="embed-responsive embed-responsive-16by9">
+                    <video class="embed-responsive-item" autoplay muted loop playsinline>
+                        <source src="assets/video/teaser_video.mp4" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
             </div>
         </div>
     </div>
 
-
- <hr class="divider" />
-<div class="container">
-    <div class="row">
-        <div class="col-sm-12">
-            <h2 style="font-weight: bold;">Methodology</h2>
-
-            <div class="text-center mb-4">
-                <img src="assets/function.png" style="max-width: 100%;" alt="Window function visualization" />
-            </div>
-
-            <p style="text-align: justify;">
-                Our rendering pipeline uses <strong>3D triangles</strong> as primitives, each defined by three learnable 3D vertices, color, opacity, and a smoothness parameter \( \sigma \). The triangles are projected onto the image plane using a standard pinhole camera model with known intrinsics and extrinsics.
-            </p>
-
-            <p style="text-align: justify;">
-                Instead of binary masks, we introduce a <strong>smooth window function</strong> that softly modulates the triangle's influence across pixels. This function is derived from the 2D <strong>signed distance field (SDF)</strong> of the triangle, which measures the distance from a pixel \( \mathbf{p} \) to the triangle’s edges.
-            </p>
-
-            <p style="text-align: justify;">
-                The signed distance field \( \phi(\mathbf{p}) \) is defined as the maximum of three half-plane distances:
-            </p>
-
-            <p style="text-align: center;">
-                \( \phi(\mathbf{p}) = \max\left( L_1(\mathbf{p}),\; L_2(\mathbf{p}),\; L_3(\mathbf{p}) \right) \)
-            </p>
-
-            <p style="text-align: justify;">
-                where each half-space function is defined as:
-            </p>
-
-            <p style="text-align: center;">
-                \( L_i(\mathbf{p}) = \mathbf{n}_i \cdot \mathbf{p} + d_i \)
-            </p>
-
-            <p style="text-align: justify;">
-                with \( \mathbf{n}_i \) denoting the outward-facing unit normal of the \( i \)-th edge, and \( d_i \) its signed offset from the origin.
-            </p>
-
-            <p style="text-align: justify;">
-                The final <strong>window function</strong> is:
-            </p>
-
-            <p style="text-align: center;">
-                \( I(\mathbf{p}) = \text{ReLU}\left( \frac{\phi(\mathbf{p})}{\phi(\mathbf{s})} \right)^\sigma \)
-            </p>
-
-            <p style="text-align: justify;">
-                where \( \mathbf{s} \) is the triangle’s incenter, i.e., the point where \( \phi \) is minimized. This function satisfies:
-            </p>
-
-            <ul>
-                <li><strong>Maximum opacity at the triangle incenter</strong></li>
-                <li><strong>Zero influence at and beyond the triangle boundary</strong></li>
-                <li><strong>Adjustable sharpness via the parameter \( \sigma \)</strong></li>
-            </ul>
-
-            <p style="text-align: justify;">
-                The figure above illustrates how the window function behaves in 1D and 2D. As \( \sigma \to 0 \), the function approximates a binary triangle mask. As \( \sigma \) increases, the transition becomes smoother, and in the limit \( \sigma \to \infty \), it becomes a delta function centered at \( \mathbf{s} \).
-            </p>
-
-            <p style="text-align: justify;">
-                To render an image, we accumulate contributions from all projected triangles using <strong>alpha blending</strong> in <strong>front-to-back depth order</strong>. Since all steps are differentiable, we can optimize the triangle parameters using gradient-based learning.
-            </p>
-        </div>
-    </div>
-</div>
-
-<hr class="divider" />
-        <div class="container" style="max-width: col-sm-12;">
-            <h2 style="font-weight: bold;">More Visual Results</h2>
-            
-
-            <div class="row">
-                <div class="col-md-6">
-                    <div id="example12" class="bal-container-small small-bal-container">
-                        <div class="bal-wrapper">
-                            <div class="bal-after">
-                                <video  src="assets/video/flowers.mp4" autoplay loop muted playsinline class="img-fluid"></video>
-                                <div class="bal-afterPosition afterLabel">
-                                    Triangle Splatting (Ours)
-                                </div>
-                            </div>
-                            <div class="bal-before">
-                                <div class="bal-before-inset">
-                                    <video  src="assets/video/flowers_gauss.mp4" autoplay loop muted playsinline class="img-fluid"></video>
-                                    <div class="bal-beforePosition beforeLabel">
-                                        3D Gaussian Splatting
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="bal-handle">
-                                <span class="handle-left-arrow"></span>
-                                <span class="handle-right-arrow"></span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- Example 2 -->
-                <div class="col-md-6">
-                    <div id="example11" class="bal-container-small small-bal-container">
-                        <div class="bal-wrapper">
-                            <div class="bal-after">
-                                <video  src="assets/video/bicycle_ts.mp4" autoplay loop muted playsinline class="img-fluid"></video>
-                                <div class="bal-afterPosition afterLabel">
-                                    Triangle Splatting (Ours)
-                                </div>
-                            </div>
-                            <div class="bal-before">
-                                <div class="bal-before-inset">
-                                    <video  src="assets/video/bicycle_cvx.mp4" autoplay loop muted playsinline class="img-fluid"></video>
-                                    <div class="bal-beforePosition beforeLabel">
-                                        3D Convex Splatting
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="bal-handle">
-                                <span class="handle-left-arrow"></span>
-                                <span class="handle-right-arrow"></span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-
-            <p style="text-align: justify;">
-                Triangle Splatting produces sharper and more detailed images. Notably, it renders the flowers and the background with greater realism and captures finer details compared to 3DGS or 3DCS. (If the videos appear out of sync, please reload the page to ensure proper alignment.)
-            </p>
-    
-        </div>
-
-
-
-
-        <div class="container">
-        <hr class="divider" />
-        <h2 style="font-weight: bold;">Byproduct of the Triangle-Based Representation</h2>
+    <hr class="divider" />
+    <div class="container mb-4">
         <div class="row">
-            <div class="col-md-6 text-center">
+            <div class="col-12">
+                <h2 class="font-weight-bold">Methodology</h2>
+                <div class="text-center mb-4">
+                    <img src="assets/function.png" class="img-fluid" alt="Window function visualization" />
+                </div>
+                <p class="text-justify">
+                    Our rendering pipeline uses <strong>3D triangles</strong> as primitives, each defined by three learnable 3D vertices, color, opacity, and a smoothness parameter \( \sigma \). The triangles are projected onto the image plane using a standard pinhole camera model with known intrinsics and extrinsics.
+                </p>
+                <p class="text-justify">
+                    Instead of binary masks, we introduce a <strong>smooth window function</strong> that softly modulates the triangle's influence across pixels. This function is derived from the 2D <strong>signed distance field (SDF)</strong> of the triangle, which measures the distance from a pixel \( \mathbf{p} \) to the triangle’s edges.
+                </p>
+                <p class="text-justify">
+                    The signed distance field \( \phi(\mathbf{p}) \) is defined as the maximum of three half-plane distances:
+                </p>
+                <p class="text-center">
+                    \( \phi(\mathbf{p}) = \max\bigl(L_1(\mathbf{p}),\,L_2(\mathbf{p}),\,L_3(\mathbf{p})\bigr) \)
+                </p>
+                <p class="text-justify">
+                    where each half-space function is defined as:
+                </p>
+                <p class="text-center">
+                    \( L_i(\mathbf{p}) = \mathbf{n}_i \cdot \mathbf{p} + d_i \)
+                </p>
+                <p class="text-justify">
+                    with \( \mathbf{n}_i \) denoting the outward-facing unit normal of the \( i \)-th edge, and \( d_i \) its signed offset from the origin.
+                </p>
+                <p class="text-justify">
+                    The final <strong>window function</strong> is:
+                </p>
+                <p class="text-center">
+                    \( I(\mathbf{p}) = \mathrm{ReLU}\Bigl(\tfrac{\phi(\mathbf{p})}{\phi(\mathbf{s})}\Bigr)^\sigma \)
+                </p>
+                <p class="text-justify">
+                    where \( \mathbf{s} \) is the triangle’s incenter, i.e., the point where \( \phi \) is minimized. This function satisfies:
+                </p>
+                <ul>
+                    <li><strong>Maximum opacity at the triangle incenter</strong></li>
+                    <li><strong>Zero influence at and beyond the triangle boundary</strong></li>
+                    <li><strong>Adjustable sharpness via the parameter \( \sigma \)</strong></li>
+                </ul>
+                <p class="text-justify">
+                    The figure above illustrates how the window function behaves in 1D and 2D. As \( \sigma \to 0 \), the function approximates a binary triangle mask. As \( \sigma \) increases, the transition becomes smoother, and in the limit \( \sigma \to \infty \), it becomes a delta function centered at \( \mathbf{s} \).
+                </p>
+                <p class="text-justify">
+                    To render an image, we accumulate contributions from all projected triangles using <strong>alpha blending</strong> in <strong>front-to-back depth order</strong>. Since all steps are differentiable, we can optimize the triangle parameters using gradient-based learning.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <hr class="divider" />
+    <div class="container mb-4">
+        <h2 class="font-weight-bold">More Visual Results</h2>
+        <div class="row">
+            <div class="col-12 col-md-6 mb-4">
+                <div id="example12" class="small-bal-container">
+                    <div class="bal-wrapper">
+                        <div class="bal-after">
+                            <video src="assets/video/flowers.mp4" autoplay loop muted playsinline class="img-fluid"></video>
+                            <div class="bal-afterPosition afterLabel">Triangle Splatting (Ours)</div>
+                        </div>
+                        <div class="bal-before">
+                            <div class="bal-before-inset">
+                                <video src="assets/video/flowers_gauss.mp4" autoplay loop muted playsinline class="img-fluid"></video>
+                                <div class="bal-beforePosition beforeLabel">3D Gaussian Splatting</div>
+                            </div>
+                        </div>
+                        <div class="bal-handle">
+                            <span class="handle-left-arrow"></span>
+                            <span class="handle-right-arrow"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-md-6 mb-4">
+                <div id="example11" class="small-bal-container">
+                    <div class="bal-wrapper">
+                        <div class="bal-after">
+                            <video src="assets/video/bicycle_ts.mp4" autoplay loop muted playsinline class="img-fluid"></video>
+                            <div class="bal-afterPosition afterLabel">Triangle Splatting (Ours)</div>
+                        </div>
+                        <div class="bal-before">
+                            <div class="bal-before-inset">
+                                <video src="assets/video/bicycle_cvx.mp4" autoplay loop muted playsinline class="img-fluid"></video>
+                                <div class="bal-beforePosition beforeLabel">3D Convex Splatting</div>
+                            </div>
+                        </div>
+                        <div class="bal-handle">
+                            <span class="handle-left-arrow"></span>
+                            <span class="handle-right-arrow"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <p class="text-justify">
+            Triangle Splatting produces sharper and more detailed images. Notably, it renders the flowers and the background with greater realism and captures finer details compared to 3DGS or 3DCS. (If the videos appear out of sync, please reload the page to ensure proper alignment.)
+        </p>
+    </div>
+
+    <div class="container mb-4">
+        <hr class="divider" />
+        <h2 class="font-weight-bold">Byproduct of the Triangle-Based Representation</h2>
+        <div class="row">
+            <div class="col-12 col-md-6 text-center mb-4">
                 <video class="img-fluid" autoplay muted loop playsinline>
                     <source src="assets/video/room_unity.mp4" type="video/mp4">
                     Your browser does not support the video tag.
                 </video>
             </div>
-            <div class="col-md-6 text-center">
+            <div class="col-12 col-md-6 text-center mb-4">
                 <video class="img-fluid" autoplay muted loop playsinline>
                     <source src="assets/video/garden_unity.mp4" type="video/mp4">
                     Your browser does not support the video tag.
                 </video>
             </div>
         </div>
+        <p class="text-center pt-2 mx-auto" style="max-width: 1100px;">
+            Triangle Splatting unifies differentiable scene optimization with traditional graphics pipelines. The triangle soup is compatible with any mesh-based renderer, enabling seamless integration into traditional graphics pipelines. In a game engine, we render at 2400+ FPS at 1280×720 resolution on an RTX4090.<br><br>
+            The current visuals are rendered without shaders and were not specifically trained or optimized for game engine fidelity, which accounts for the limited visual quality. Nevertheless, it demonstrates an important first step toward the direct integration of radiance fields into interactive 3D environments. Future work could explore training strategies specifically tailored to maximize visual fidelity in mesh-based renderers, paving the way for seamless integration of reconstructed scenes into standard game engines for real-time applications such as AR/VR or interactive simulations.
+        </p>
     </div>
 
-
-        
-        <p class="text-center" style="padding-top: 10px; margin: 0 auto; max-width: 1100px;">
-            Triangle Splatting unifies differentiable scene optimization with traditional graphics pipelines. The triangle soup is compatible with any mesh-based
-            renderer, enabling seamless integration into traditional graphics pipelines. 
-            In a game engine, we render at 2400+ FPS at 1280×720 resolution on an RTX4090.
-
-            <br><br>
-            The current visuals are rendered without shaders and were not specifically trained or optimized for game engine fidelity, which accounts for the limited visual quality. 
-            Nevertheless, it demonstrates an important first step toward the direct integration of radiance fields into interactive 3D environments. 
-            Future work could explore training strategies specifically tailored to maximize visual fidelity in mesh-based renderers, paving the way for seamless integration of reconstructed scenes into standard game engines for real-time applications such as AR/VR or interactive simulations.
-        </p>
-
-
-
-
-
-        <div class="container">
-            <hr class="divider" />
-            <h2></h2>
-             <h2 style="font-weight: bold;">Geometry accuracy</h2>
-            <div class="row">
-                <!-- Example 2 -->
-                <div class="col-md-6">
-                    <div id="examplenorm1" class="bal-container-small small-bal-container">
-                        <div class="bal-wrapper">
-                            <div class="bal-after">
-                                <img src="assets/comparisons/Compressed/truck_ts.png" alt="Example 2 After">
-                                <div class="bal-afterPosition afterLabel">
-                                    RGB image
-                                </div>
-                            </div>
-                            <div class="bal-before">
-                                <div class="bal-before-inset">
-                                    <img src="assets/comparisons/Compressed/truck_normal.png" alt="Example 2 Before">
-                                    <div class="bal-beforePosition beforeLabel">
-                                        Normal map
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="bal-handle">
-                                <span class="handle-left-arrow"></span>
-                                <span class="handle-right-arrow"></span>
+    <div class="container mb-4">
+        <hr class="divider" />
+        <h2 class="font-weight-bold">Geometry accuracy</h2>
+        <div class="row">
+            <div class="col-12 col-md-6 mb-4">
+                <div id="examplenorm1" class="small-bal-container">
+                    <div class="bal-wrapper">
+                        <div class="bal-after">
+                            <img src="assets/comparisons/Compressed/truck_ts.png" alt="RGB image">
+                            <div class="bal-afterPosition afterLabel">RGB image</div>
+                        </div>
+                        <div class="bal-before">
+                            <div class="bal-before-inset">
+                                <img src="assets/comparisons/Compressed/truck_normal.png" alt="Normal map">
+                                <div class="bal-beforePosition beforeLabel">Normal map</div>
                             </div>
                         </div>
-                    </div>
-                </div>
-                <!-- Example 3 -->
-                <div class="col-md-6">
-                    <div id="examplenorm2" class="bal-container-small small-bal-container">
-                        <div class="bal-wrapper">
-                            <div class="bal-after">
-                                <img src="assets/comparisons/Compressed/garden_normal_rgb.png" alt="Example 3 After">
-                                <div class="bal-afterPosition afterLabel">
-                                    RGB image
-                                </div>
-                            </div>
-                            <div class="bal-before">
-                                <div class="bal-before-inset">
-                                    <img src="assets/comparisons/Compressed/garden_normal.png" alt="Example 3 Before">
-                                    <div class="bal-beforePosition beforeLabel">
-                                        Normal map
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="bal-handle">
-                                <span class="handle-left-arrow"></span>
-                                <span class="handle-right-arrow"></span>
-                            </div>
+                        <div class="bal-handle">
+                            <span class="handle-left-arrow"></span>
+                            <span class="handle-right-arrow"></span>
                         </div>
                     </div>
                 </div>
             </div>
-
+            <div class="col-12 col-md-6 mb-4">
+                <div id="examplenorm2" class="small-bal-container">
+                    <div class="bal-wrapper">
+                        <div class="bal-after">
+                            <img src="assets/comparisons/Compressed/garden_normal_rgb.png" alt="RGB image">
+                            <div class="bal-afterPosition afterLabel">RGB image</div>
+                        </div>
+                        <div class="bal-before">
+                            <div class="bal-before-inset">
+                                <img src="assets/comparisons/Compressed/garden_normal.png" alt="Normal map">
+                                <div class="bal-beforePosition beforeLabel">Normal map</div>
+                            </div>
+                        </div>
+                        <div class="bal-handle">
+                            <span class="handle-left-arrow"></span>
+                            <span class="handle-right-arrow"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-            
-
-        <p class="text-center" style="padding-top: 10px; margin: 0 auto; max-width: 1100px;">
+        <p class="text-center pt-2 mx-auto" style="max-width: 1100px;">
             The triangles are well aligned with the underlying geometry. All triangles share a consistent orientation and lie flat on the surface.
         </p>
+    </div>
 
-
-
+    <div class="container mb-4">
         <hr class="divider" />
+        <h2 class="font-weight-bold">Citation</h2>
+        <code>
+            @article{Held2025Triangle,<br>
+            &nbsp;&nbsp;title = {Triangle Splatting for Real-Time Radiance Field Rendering},<br>
+            &nbsp;&nbsp;author = {Held, Jan and Vandeghen, Renaud and Deliege, Adrien and Hamdi, Abdullah and Cioppa, Anthony and Giancola, Silvio and Vedaldi, Andrea and Ghanem, Bernard and Tagliasacchi, Andrea and Van Droogenbroeck, Marc},<br>
+            &nbsp;&nbsp;journal = {arXiv},<br>
+            &nbsp;&nbsp;year = {2025},<br>
+            }
+        </code>
+    </div>
+
+    <hr class="divider" />
+    <footer class="footer">
         <div class="container">
-            <h2 style="font-weight: bold;">Citation</h2>
-                    <code>
-                        @article{Held2025Triangle,<br>
-                            title = {Triangle Splatting for Real-Time Radiance Field Rendering},<br>
-                            author = {Held, Jan and Vandeghen, Renaud and Deliege, Adrien and Hamdi, Abdullah and Cioppa, Anthony and Giancola, Silvio and Vedaldi, Andrea and Ghanem, Bernard and Tagliasacchi, Andrea and Van Droogenbroeck, Marc},<br>
-                            journal = {arXiv},<br>
-                            year = {2025},<br>
-                        }</code>
-        </div>
-        
-        <!-- Footer -->
-        <hr class="divider" />
-        <footer class="footer">
-            <div class="container">
-                <div class="content has-text-centered">
-                    <a class="icon-link" href="assets/videos/nerfies_paper.pdf">
-                        <i class="fas fa-file-pdf"></i>
-                    </a>
-                    <a class="icon-link" href="https://github.com/keunhong" class="external-link" disabled>
-                        <i class="fab fa-github"></i>
-                    </a>
-                </div>
-                <div class="columns is-centered">
-                    <div class="column is-8">
-                        <div class="content">
-                            <p>
-                                This website is licensed under a <a rel="license"
-                                    href="http://creativecommons.org/licenses/by-sa/4.0/">Creative
-                                    Commons Attribution-ShareAlike 4.0 International License</a>.
-                            </p>
-                            <p>
-                                We borrow the <a href="https://dreamfusion3d.github.io/">source code</a> for our
-                                website.
-                                We sincerely appreciate DreamFusion authors for their awesome templates.
-                                <!-- we just ask that you link back to this page in the footer.
-                            Please remember to remove the analytics code included in the header of the website which
-                            you do not want on your website. -->
-                            </p>
-                        </div>
+            <div class="content has-text-centered">
+                <a class="icon-link" href="assets/videos/nerfies_paper.pdf">
+                    <i class="fas fa-file-pdf"></i>
+                </a>
+                <a class="icon-link" href="https://github.com/keunhong" class="external-link" disabled>
+                    <i class="fab fa-github"></i>
+                </a>
+            </div>
+            <div class="columns is-centered">
+                <div class="column is-8">
+                    <div class="content">
+                        <p>
+                            This website is licensed under a <a rel="license"
+                                href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons
+                                Attribution-ShareAlike 4.0 International License</a>.
+                        </p>
+                        <p>
+                            We borrow the <a href="https://dreamfusion3d.github.io/">source code</a> for our
+                            website. We sincerely appreciate DreamFusion authors for their awesome
+                            templates.
+                        </p>
                     </div>
                 </div>
             </div>
-        </footer>
+        </div>
+    </footer>
 
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="https://polyfill.io/v3/polyfill.js?features=IntersectionObserver"></script>
+    <script src="assets/js/yall.js"></script>
+    <script>
+        yall({ observeChanges: true });
+    </script>
+    <script src="assets/js/scripts.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/js/bootstrap.bundle.min.js"></script>
+    <script src="https://uploads-ssl.webflow.com/51e0d73d83d06baa7a00000f/js/webflow.fd002feec.js"></script>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            var video = document.getElementById('speed025');
+            if (video) {
+                video.playbackRate = 0.1;
+            }
+        });
+    </script>
 
-        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-        <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-
-
-        <script src="https://polyfill.io/v3/polyfill.js?features=IntersectionObserver"></script>
-        <script src="assets/js/yall.js"></script>
-        <script>
-            yall({
-                observeChanges: true
-            });
-        </script>
-        <script src="assets/js/scripts.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/js/bootstrap.bundle.min.js">
-        </script>
-        <script src="https://uploads-ssl.webflow.com/51e0d73d83d06baa7a00000f/js/webflow.fd002feec.js"></script>
-        <!-- Import the component -->
-
-        <script>
-            document.addEventListener('DOMContentLoaded', (event) => {
-                var video = document.getElementById('speed025');
-                video.playbackRate = 0.1; // Play at half speed
-            });
-        </script>
-       
-        <script>
-            new BeforeAfter({
-                id: '#example1'
-            });
-        </script>
-
-        <script>
-            new BeforeAfter({
-                id: '#example2'
-            });
-        </script>
-
-        <script>
-            new BeforeAfter({
-                id: '#example3'
-            });
-        </script>
-
-
-        <script>
-            new BeforeAfter({
-                id: '#example4'
-            });
-        </script>
-
-        <script>
-            new BeforeAfter({
-                id: '#example5'
-            });
-        </script>
-
-        <script>
-            new BeforeAfter({
-                id: '#examplenorm1'
-            });
-        </script>
-
-        <script>
-            new BeforeAfter({
-                id: '#examplenorm2'
-            });
-        </script>
-
-
-
-        <script>
-            new BeforeAfter({
-                id: '#example6'
-            });
-        </script>
-
-
-        <script>
-            new BeforeAfter({
-                id: '#example7'
-            });
-        </script>
-
-
-        <script>
-            new BeforeAfter({
-                id: '#example11'
-            });
-        </script>
-
-        <script>
-            new BeforeAfter({
-                id: '#example12'
-            });
-        </script>
-
-        <script>
-            new BeforeAfter({
-                id: '#example13'
-            });
-        </script>
-
-        <script>
-            new BeforeAfter({
-                id: '#example14'
-            });
-        </script>
-
-        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
-        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
-
-
+    <script>
+        new BeforeAfter({ id: '#example2' });
+        new BeforeAfter({ id: '#example3' });
+        new BeforeAfter({ id: '#example4' });
+        new BeforeAfter({ id: '#example5' });
+        new BeforeAfter({ id: '#example6' });
+        new BeforeAfter({ id: '#example7' });
+        new BeforeAfter({ id: '#example11' });
+        new BeforeAfter({ id: '#example12' });
+        new BeforeAfter({ id: '#examplenorm1' });
+        new BeforeAfter({ id: '#examplenorm2' });
+    </script>
 </body>
 
 </html>
-
